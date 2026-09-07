@@ -72,29 +72,7 @@ function App() {
         />
       </div>
 
-      <div className="charts-container">
-        <MetricChart 
-          data={data} 
-          dataKey="temperature" 
-          name="Temperature (°C)" 
-          color="#38bdf8" 
-          gradientId="colorTemp" 
-        />
-        <MetricChart 
-          data={data} 
-          dataKey="moisture" 
-          name="Moisture (1=TRUE, 0=FALSE)" 
-          color="#34d399" 
-          gradientId="colorMoist" 
-        />
-        <MetricChart 
-          data={data} 
-          dataKey="ultrasonic" 
-          name="Ultrasonic (%)" 
-          color="#a78bfa" 
-          gradientId="colorUltra" 
-        />
-      </div>
+      <MetricChart data={data} />
     </div>
   )
 }
