@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { fetchTemperatureData } from './utils/dataFetcher'
-import TemperatureDisplay from './components/TemperatureDisplay'
-import TemperatureChart from './components/TemperatureChart'
+import MetricDisplay from './components/MetricDisplay'
+import MetricChart from './components/MetricChart'
 
 function App() {
   const [data, setData] = useState([])
@@ -22,32 +22,56 @@ function App() {
       }
     };
 
-    // Initial load
     loadData();
-
-    // Poll every 5 seconds (5000ms)
     intervalId = setInterval(loadData, 5000);
-
     return () => clearInterval(intervalId);
   }, []);
 
-  const latestTemp = data.length > 0 ? data[data.length - 1].temperature : null;
-  const previousTemp = data.length > 1 ? data[data.length - 2].temperature : null;
+  const getLatest = (key) => {
+    const valid = data.filter(d => d[key] !== null && d[key] !== undefined && !isNaN(d[key]));
+    return valid.length > 0 ? valid[valid.length - 1][key] : null;
+  };
+  
+  const getPrev = (key) => {
+    const valid = data.filter(d => d[key] !== null && d[key] !== undefined && !isNaN(d[key]));
+    return valid.length > 1 ? valid[valid.length - 2][key] : null;
+  };
 
   return (
-    <div className="dashboard-container">
-      <div>
-        <h1 style={{ marginBottom: '2rem' }}>Server Room Dashboard</h1>
-        {error && (
-          <div style={{ padding: '1rem', background: 'rgba(239, 68, 68, 0.2)', color: '#fca5a5', borderRadius: '12px', marginBottom: '2rem' }}>
-            Error: {error}
-          </div>
-        )}
-        <TemperatureDisplay latestTemp={latestTemp} previousTemp={previousTemp} />
+    <div className="dashboard-container" style={{ display: 'block', maxWidth: '1400px' }}>
+      <h1 style={{ marginBottom: '2rem', textAlign: 'center' }}>IoT Sensor Dashboard</h1>
+      
+      {error && (
+        <div style={{ padding: '1rem', background: 'rgba(239, 68, 68, 0.2)', color: '#fca5a5', borderRadius: '12px', marginBottom: '2rem' }}>
+          Error: {error}
+        </div>
+      )}
+      
+      <div className="metrics-grid">
+        <MetricDisplay 
+          title="Temperature" 
+          latestValue={getLatest('temperature')} 
+          previousValue={getPrev('temperature')} 
+          unit="°C" 
+          colorClass="temp" 
+        />
+        <MetricDisplay 
+          title="Moisture" 
+          latestValue={getLatest('moisture')} 
+          previousValue={getPrev('moisture')} 
+          unit="" 
+          colorClass="" 
+        />
+        <MetricDisplay 
+          title="Ultrasonic" 
+          latestValue={getLatest('ultrasonic')} 
+          previousValue={getPrev('ultrasonic')} 
+          unit="%" 
+          colorClass="" 
+        />
       </div>
-      <div>
-        <TemperatureChart data={data} />
-      </div>
+
+      <MetricChart data={data} />
     </div>
   )
 }

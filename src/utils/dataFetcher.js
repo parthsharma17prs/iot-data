@@ -15,19 +15,20 @@ export const fetchTemperatureData = async () => {
         header: true,
         skipEmptyLines: true,
         complete: (results) => {
-          // Parse data to format suitable for Recharts and display
           const parsedData = results.data.map(row => {
             const tempStr = row['Temperature'];
-            const temp = tempStr ? parseFloat(tempStr) : null;
+            const moistStr = row['Moisture'];
+            const ultraStr = row['Ultrasonic (%)'];
             
             return {
               time: row['Time'],
               timestamp: new Date(row['Time']).getTime(),
-              temperature: temp
+              temperature: tempStr ? parseFloat(tempStr) : null,
+              moisture: moistStr ? parseFloat(moistStr) : null,
+              ultrasonic: ultraStr ? parseFloat(ultraStr) : null
             };
-          }).filter(row => row.temperature !== null && !isNaN(row.temperature));
+          }).filter(row => row.temperature !== null || row.moisture !== null || row.ultrasonic !== null);
           
-          // Sort chronologically just in case
           parsedData.sort((a, b) => a.timestamp - b.timestamp);
           
           resolve(parsedData);
@@ -38,7 +39,7 @@ export const fetchTemperatureData = async () => {
       });
     });
   } catch (error) {
-    console.error("Error fetching temperature data:", error);
+    console.error("Error fetching data:", error);
     throw error;
   }
 };

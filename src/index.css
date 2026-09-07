@@ -63,6 +63,12 @@ body {
   }
 }
 
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
 /* Typography */
 h1 {
   font-size: 2rem;
