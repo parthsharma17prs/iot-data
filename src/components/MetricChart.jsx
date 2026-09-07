@@ -21,23 +21,20 @@ const CustomTooltip = ({ active, payload, label }) => {
         boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)'
       }}>
         <p style={{ margin: '0 0 5px 0', fontSize: '0.875rem', color: '#94a3b8' }}>{label}</p>
-        {payload.map((entry, index) => (
-          <p key={index} style={{ margin: '3px 0', fontWeight: 'bold', color: entry.color }}>
-            {entry.name}: {entry.value.toFixed(1)}
-          </p>
-        ))}
+        <p style={{ margin: '3px 0', fontWeight: 'bold', color: payload[0].color }}>
+          {payload[0].name}: {payload[0].value}
+        </p>
       </div>
     );
   }
-
   return null;
 };
 
-const MetricChart = ({ data }) => {
+const MetricChart = ({ data, dataKey, name, color, gradientId }) => {
   if (!data || data.length === 0) {
     return (
       <div className="glass-panel" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-        <p style={{ color: '#94a3b8' }}>Loading chart data...</p>
+        <p style={{ color: '#94a3b8' }}>Loading {name} data...</p>
       </div>
     );
   }
@@ -52,26 +49,18 @@ const MetricChart = ({ data }) => {
   });
 
   return (
-    <div className="glass-panel" style={{ marginTop: '2rem' }}>
-      <h2 className="subtitle">Historical Trends</h2>
-      <div className="chart-container">
+    <div className="glass-panel" style={{ marginBottom: '2rem' }}>
+      <h2 className="subtitle">{name} Analytics</h2>
+      <div className="chart-container" style={{ height: '300px' }}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={formattedData}
             margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
           >
             <defs>
-              <linearGradient id="colorTemp" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#38bdf8" stopOpacity={0.4}/>
-                <stop offset="95%" stopColor="#38bdf8" stopOpacity={0}/>
-              </linearGradient>
-              <linearGradient id="colorMoisture" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#34d399" stopOpacity={0.4}/>
-                <stop offset="95%" stopColor="#34d399" stopOpacity={0}/>
-              </linearGradient>
-              <linearGradient id="colorUltra" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#a78bfa" stopOpacity={0.4}/>
-                <stop offset="95%" stopColor="#a78bfa" stopOpacity={0}/>
+              <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor={color} stopOpacity={0.4}/>
+                <stop offset="95%" stopColor={color} stopOpacity={0}/>
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
@@ -91,34 +80,12 @@ const MetricChart = ({ data }) => {
             <Tooltip content={<CustomTooltip />} />
             <Area 
               type="monotone" 
-              name="Temperature (°C)"
-              dataKey="temperature" 
-              stroke="#38bdf8" 
+              name={name}
+              dataKey={dataKey} 
+              stroke={color} 
               strokeWidth={2}
               fillOpacity={1} 
-              fill="url(#colorTemp)" 
-              animationDuration={500}
-              connectNulls
-            />
-            <Area 
-              type="monotone" 
-              name="Moisture"
-              dataKey="moisture" 
-              stroke="#34d399" 
-              strokeWidth={2}
-              fillOpacity={1} 
-              fill="url(#colorMoisture)" 
-              animationDuration={500}
-              connectNulls
-            />
-            <Area 
-              type="monotone" 
-              name="Ultrasonic (%)"
-              dataKey="ultrasonic" 
-              stroke="#a78bfa" 
-              strokeWidth={2}
-              fillOpacity={1} 
-              fill="url(#colorUltra)" 
+              fill={`url(#${gradientId})`} 
               animationDuration={500}
               connectNulls
             />

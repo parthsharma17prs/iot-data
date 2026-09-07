@@ -20,11 +20,16 @@ export const fetchTemperatureData = async () => {
             const moistStr = row['Moisture'];
             const ultraStr = row['Ultrasonic (%)'];
             
+            let moistVal = null;
+            if (moistStr === 'TRUE') moistVal = 1;
+            else if (moistStr === 'FALSE') moistVal = 0;
+            else if (moistStr && !isNaN(parseFloat(moistStr))) moistVal = parseFloat(moistStr);
+
             return {
               time: row['Time'],
               timestamp: new Date(row['Time']).getTime(),
               temperature: tempStr ? parseFloat(tempStr) : null,
-              moisture: moistStr ? parseFloat(moistStr) : null,
+              moisture: moistVal,
               ultrasonic: ultraStr ? parseFloat(ultraStr) : null
             };
           }).filter(row => row.temperature !== null || row.moisture !== null || row.ultrasonic !== null);
